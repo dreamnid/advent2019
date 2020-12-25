@@ -26,27 +26,55 @@ INPUT_FILE='2-input.txt'
 #INPUT_FILE='2a-example.txt'
 
 input = [int(el) for el in get_file_contents(INPUT_FILE)[0][0].split(',')]
-print(input)
+#print(input)
 
 def run(input):
-    idx = 0
+    prog_counter = 0
     while True:
-        opcode = input[idx]
+        opcode = input[prog_counter]
 
-        if opcode == 99 or idx >= len(input):
+        if opcode == 99 or prog_counter >= len(input):
             break
         elif opcode == 1:
             # add
-            input[input[idx+3]] = input[input[idx+1]] + input[input[idx+2]]
+            input[input[prog_counter+3]] = input[input[prog_counter+1]] + input[input[prog_counter+2]]
         elif opcode == 2:
             # mult
-            input[input[idx+3]] = input[input[idx+1]] * input[input[idx+2]]
+            input[input[prog_counter+3]] = input[input[prog_counter+1]] * input[input[prog_counter+2]]
         else:
             assert False, 'Bad opcode'
 
-        idx += 4
+        prog_counter += 4
     return input
 
-input[1] = 12
-input[2] = 2
-print('part a:', run(input)[0])
+start_a = time()
+input_a = input.copy()
+input_a[1] = 12
+input_a[2] = 2
+print('part a:', run(input_a)[0])
+print('part a timing:', time() - start_a)
+print()
+
+start_b = time()
+found = False
+for i in range(100):
+    for j in range(100):
+        input_attempt = input.copy()
+        input_attempt[1] = i
+        input_attempt[2] = j
+
+        try:
+            res = run(input_attempt)
+            if res[0] == 19690720:
+                found = True
+                break
+        except IndexError:
+            continue
+    if found:
+        break
+
+if found:
+    print('part b:', input_attempt[1], input_attempt[2], 100 * input_attempt[1] + input_attempt[2])
+    print('part b timing:', time() - start_b)
+else:
+    print('Ruh-roo, no answer found')
